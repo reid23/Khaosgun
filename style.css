@@ -1,0 +1,19 @@
+
+#firebutton {
+    padding: 10px;
+    margin: 10px;
+}
+#revbutton {
+    padding: 10px;
+    margin: 10px;
+}
+#photobutton {
+    padding: 10px;
+    margin: 10px;
+}
+.red {
+    background-color: red;
+}
+.green {
+    background-color: green;
+}

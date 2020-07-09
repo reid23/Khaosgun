@@ -3,6 +3,7 @@
 <head>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<title>Gun Control</title>
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
 	<h1>Video Stream:</h1>
@@ -11,26 +12,6 @@
 	<div id="revbutton">REV</div>
 	<div id="firebutton" onmousedown="fire()" onmouseup="ceasefire()" ontouchstart="fire()" ontouchend="ceasefire()">FIRE</div>
 	<div id="photobutton" onmousedown="redify()" onmouseup="greenify()" onclick="photo2()" ontouchstart="redify()" ontouchend="greenify()">PHOTO</div>
-	<style>
-		#firebutton {
-			padding: 10px;
-			margin: 10px;
-		}
-		#revbutton {
-			padding: 10px;
-			margin: 10px;
-		}
-		#photobutton {
-			padding: 10px;
-			margin: 10px;
-		}
-		.red {
-			background-color: red;
-		}
-		.green {
-			background-color: green;
-		}
-	</style>
 	<script>
 		$(document).ready(function(){
 			$.ajax({
