@@ -17,17 +17,18 @@ GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 camera = PiCamera()
 photobutton = photoButton()
 
-bool aividMode #true means squirrel/photo, false means human/video
-bool pbState
-bool oldpbState
-int controlState #0 means none, 1 means web, 2 means AI
-int oldControlState
+#variables and comments
+#aividMode     #False means squirrel/photo, True means human/video
+#pbState       #the state of the photo button.  False means pressed, True means unpressed
+#oldpbState    #the state of the photo button last iteration, to make sure action is only taken when things change
+#controlState  #0 means none, 1 means web, 2 means AI
+#oldControlState
 
 
 
 
 class photoButton:
-	recording = false
+	recording = False
 	videoNumber = 0
 	photoNumber = 0
 	def takeWebPhoto(self):
@@ -36,23 +37,24 @@ class photoButton:
 
 	def takePhoto(self):
 		camera.capture("Photo" & photoNumber)
-		photoNumber++
+		photoNumber+=1
 	def videoAction(self):
-		if(recording == false):
+		if(recording == False):
 			camera.start_recording("video" & videoNumber)
-			videoNumber++
-			recording = true
-		else if(recording == true):
+			videoNumber+=1
+			recording = True
+		elif(recording == True):
 			camera.stop_recording()
-			recording = false
+			recording = False
 
 def startAI():
 	subprocess.call("sudo kill -9 `pidof mjpg_streamer`")
 	#add ai start
 def startWebControl():
 	subprocess.call("sudo /usr/local/bin/mjpg_streamer -i 'input_uvc.so -r 1280x720 -d /dev/video0 -f 30 -q 80' -o 'output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www'")
+	#add kill ai 
 def startManual();
-	#kill ai
+	#add kill ai
 	subprocess.call("sudo kill -9 `pidof mjpg_streamer`")
 
 while True:
@@ -60,39 +62,40 @@ while True:
 	oldpbState = pbState
     pbState = GPIO.input(6)
     oldControlState = controlState
-    if(GPIO.input(27) == true):
+    if(GPIO.input(27) == False):
 		controlState = 1
-	else if(GPIO.input(22)):
+	elif(GPIO.input(22) == False):
 	   	controlState = 2
 	else:
 	    controlState = 0
 
-    if(pbState = oldpbState):
-    	
+    if(pbState == oldpbState):
+    	pass
     else:
-	    if(pbState == true):
-	    	if(aividMode == true):
+	    if(pbState == True):
+	    	if(aividMode == False):
 	    		if(controlState == 0):
 	    			photobutton.takePhoto()
-	    		else if(controlState == 1):
+	    		elif(controlState == 1):
 	    			photobutton.takeWebPhoto()
 	    		else:
 	    			photobutton.takeAIPhoto()
 	    	else:
 	    		if(controlState == 0):
 	    			photoButton.videoaction()
-	    		else if(controlState == 2):
+	    		elif(controlState == 2):
     if(oldControlState == controlState):
-
+    	pass
     else:
     	if(controlState == 0):
     		startManual()
-    	else if(controlState == 1):
+    	elif(controlState == 1):
     		startWebControl()
-    	else if(controlState == 2):
+    	elif(controlState == 2):
     		startAI()
     	else:
     		startManual()
+   	time.sleep(0.2)
 
 
 
