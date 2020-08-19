@@ -6,6 +6,7 @@ import os
 import subprocess
 from picamera import PiCamera
 from enum import Enum
+from PIL import Image
 
 GPIO.setmode(GPIO.BCM)
 
@@ -35,6 +36,7 @@ class photoButton:
         os.system("/var/www/html/photo.sh &")
     def takeAIPhoto(self):
         pass
+        #AI photo is the same as web photo
     def takePhoto(self):
         global photoNumber
         global camera
@@ -65,7 +67,12 @@ def startAI():
     if(iscamera == True):
         camera.close()
         iscamera = False
-    #add ai start
+    if(aividMode == True):
+        os.system('rm -rf /var/www/html/squirrel.txt')
+        os.system('touch /var/www/html/human.txt')
+    else:
+        os.system('rm -rf /var/www/html/human.txt')
+        os.system('touch /var/www/html/squirrel.txt')
 def startWebControl():
     global camera
     print("starting web control")
@@ -75,10 +82,10 @@ def startWebControl():
         time.sleep(0.2)
         iscamera == False
     os.system("sudo /usr/local/bin/mjpg_streamer -i 'input_uvc.so -r 1280x720 -d /dev/video0 -f 30 -q 80' -o 'output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www' &")
-    #add kill ai
+    os.system('rm -rf /var/www/html/squirrel.txt; rm -rf /var/www/html/human.txt')
 def startManual():
     global camera
-    #add kill ai
+    os.system('rm -rf /var/www/html/squirrel.txt; rm -rf /var/www/html/human.txt')
     print("starting manual mode")
     global iscamera
     os.system("sudo kill -9 `pidof mjpg_streamer` &")
