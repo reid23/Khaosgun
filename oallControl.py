@@ -68,11 +68,11 @@ def startAI():
         camera.close()
         iscamera = False
     if(aividMode == True):
-        os.system('rm -rf /var/www/html/squirrel.txt')
-        os.system('touch /var/www/html/human.txt')
+        os.system('rm -rf /var/www/html/squirrel.html')
+        os.system('touch /var/www/html/human.html')
     else:
-        os.system('rm -rf /var/www/html/human.txt')
-        os.system('touch /var/www/html/squirrel.txt')
+        os.system('rm -rf /var/www/html/human.html')
+        os.system('touch /var/www/html/squirrel.html')
 def startWebControl():
     global camera
     print("starting web control")
