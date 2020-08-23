@@ -30,6 +30,7 @@
 			$('#photobutton').addClass('green');
 			$('#revbutton').addClass('green');
 			$('#firebutton').addClass('green');
+            $('#deletephotos').addClass('green');
 			$('#revbutton').click(function(){
 				if ($('#revbutton').hasClass('green')) {
 					$('#revbutton').removeClass('green');
@@ -91,11 +92,10 @@
         function makeGreen() {
             $('#deletephotos').removeClass('red').addClass('green');
         }
-        function makeGreen() {
+        function makeRed() {
             $('#deletephotos').removeClass('green').addClass('red');
         }
         function deletePhotos() {
-            $('#firebutton').removeClass('green').addClass('red');
             $.ajax({
                 url: 'deleteP.php',
                 success: function(data) {
