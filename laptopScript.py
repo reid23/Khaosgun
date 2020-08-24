@@ -107,7 +107,7 @@ while True:
             if(numberIndex != -1):
                 numberIndex += 8
                 result = result[numberIndex:numberIndex+2]
-                if(result.find("%") != -1)):
+                if(result.find("%") != -1):
                     result = result[:1]
                 if(float(result)<20): #change the 20 for changing sensetivity
                     fire()
