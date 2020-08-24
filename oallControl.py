@@ -82,10 +82,10 @@ def startWebControl():
         time.sleep(0.2)
         iscamera == False
     os.system("sudo /usr/local/bin/mjpg_streamer -i 'input_uvc.so -r 1280x720 -d /dev/video0 -f 30 -q 80' -o 'output_http.so -p 8080 -w /usr/local/share/mjpg-streamer/www' &")
-    os.system('rm -rf /var/www/html/squirrel.txt; rm -rf /var/www/html/human.txt')
+    os.system('rm -rf /var/www/html/squirrel.html; rm -rf /var/www/html/human.html')
 def startManual():
     global camera
-    os.system('rm -rf /var/www/html/squirrel.txt; rm -rf /var/www/html/human.txt')
+    os.system('rm -rf /var/www/html/squirrel.html; rm -rf /var/www/html/human.html')
     print("starting manual mode")
     global iscamera
     os.system("sudo kill -9 `pidof mjpg_streamer` &")
@@ -95,8 +95,9 @@ def startManual():
 
 pbState = True
 controlState = 4
-
+aividMode = False
 while True:
+    oldaividMode = aividMode
     aividMode = GPIO.input(16)
     oldpbState = pbState
     pbState = GPIO.input(6)
@@ -131,9 +132,18 @@ while True:
             startManual()
         elif(controlState == 1):
             startWebControl()
-        elif(controlState == 2):
             startAI()
         else:
             startManual()
+    if(aividMode == oldaividMode):
+        pass
+    else:
+        if(aividMode == True):
+            os.system('rm -rf /var/www/html/squirrel.html')
+            os.system('touch /var/www/html/human.html')
+        else:
+            os.system('rm -rf /var/www/html/human.html')
+            os.system('touch /var/www/html/squirrel.html')
+
     time.sleep(0.05)
 

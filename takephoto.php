@@ -1,3 +1,3 @@
 <?php
-	system("sudo /var/www/html/./photo.sh");
+	system("/var/www/html/./photo.sh");
 ?>
