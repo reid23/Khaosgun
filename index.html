@@ -12,7 +12,6 @@
 	<div id="revbutton" onselectstart="return false">REV</div>
 	<div id="firebutton" onselectstart="return false" onmousedown="fire()" onmouseup="ceasefire()" ontouchstart="fire()" ontouchend="ceasefire()">FIRE</div>
 	<div id="photobutton" onselectstart="return false" onmousedown="redify()" onmouseup="greenify()" onclick="photo2()" ontouchstart="redify()" ontouchend="greenify()">PHOTO</div>
-    <div id="deletephotos" onselectstart="return false" onmousedown="makeRed()" onmouseup="makeGreen()" onclick="deletePhotos()">DELETE ALL PHOTOS</div>
 	<script>
 		$(document).ready(function(){
 			$.ajax({
@@ -21,16 +20,15 @@
 					$('.result').html(data);
 				}
 			});
-                        $.ajax({
-                                url: 'firepinoff.php',
-                                success: function(data) {
-                                        $('.result').html(data);
-                                }
-                        });
+			$.ajax({
+					url: 'firepinoff.php',
+					success: function(data) {
+							$('.result').html(data);
+					}
+			});
 			$('#photobutton').addClass('green');
 			$('#revbutton').addClass('green');
 			$('#firebutton').addClass('green');
-            $('#deletephotos').addClass('green');
 			$('#revbutton').click(function(){
 				if ($('#revbutton').hasClass('green')) {
 					$('#revbutton').removeClass('green');
@@ -89,20 +87,6 @@
 		function reloadpage() {
 			location.reload();
 		}
-        function makeGreen() {
-            $('#deletephotos').removeClass('red').addClass('green');
-        }
-        function makeRed() {
-            $('#deletephotos').removeClass('green').addClass('red');
-        }
-        function deletePhotos() {
-            $.ajax({
-                url: 'deleteP.php',
-                success: function(data) {
-                    $('.result').html(data);
-                }
-            });
-        }
 	</script>
 </body>
 </html>
