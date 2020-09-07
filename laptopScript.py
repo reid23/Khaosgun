@@ -29,9 +29,10 @@ def url_is_alive(url):
 def fire():
     print("shoot!!!!!!")
     req("http://khaosgun.local/pinon.php")
-    time.sleep(0.8)  # this is how long the gun revs to get going before firing.
+    time.sleep(0.1)  # this is how long the gun revs to get going before firing.
     req("http://khaosgun.local/firepinon.php")
-    time.sleep(1.5)  # this is how long the gun is firing.
+
+def stopFire():
     req("http://khaosgun.local/firepinoff.php")
     req("http://khaosgun.local/pinoff.php")
 
@@ -129,7 +130,7 @@ while True:
                 if(float(result) > 20):
                     fire()
             else:
-                pass
+                stopFire()
         elif(url_is_alive("http://khaosgun.local/human.html")):
             im = Image.open("/Users/reiddye/darknet/data/mjpgStream.jpg")
             width, height = im.size
@@ -163,6 +164,8 @@ while True:
                 if(float(result)>20): #change the 20 for changing sensetivity
                     fire()
                 print(result)
+            else:
+                stopFire()
                 
         else:
-            pass
+            stopFire()
