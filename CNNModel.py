@@ -2,7 +2,7 @@
 import keras
 #import tensorflow as tf
 import numpy as np
-#from PIL import Image
+from PIL import Image
 import cv2
 import h5py
 import numpy as np
@@ -51,52 +51,70 @@ model.add(BatchNormalization())
 model.add(Flatten())
 model.add(Dropout(0.4))
 model.add(Dense(3, activation='softmax'))
+#end model
 
-#load weights
+
+x_test = np.load(r'D:\Downloads\results\x_test.npy')
+x_train = np.load(r'D:\Downloads\results\x_train.npy')
+y_test = np.load(r'D:\Downloads\results\y_test.npy')
+y_train = np.load(r'D:\Downloads\results\y_train.npy')
+print(x_test[1].shape)
+print("shape of labels:")
+print(y_test)
+#function to make stuff readable
+labels = ['gatto', 'scoiattolo', 'humans']
+
+#image loading/reshaping
+img = cv2.imread('standing.jpg')
+print('Original Dimensions : ',img.shape)
+ 
+width = 100
+height = 100
+dim = (width, height)
+ 
+#     resize image
+resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+ 
+print('Resized Dimensions : ',resized.shape)
+ 
+cv2.imshow("Resized image", resized)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+print("resized image shape: ")
+print(resized.shape)
+
+
+#load from model folder
+#model = keras.models.load_model('D:\Downloads\model (1)\content\model.model')
+
+#load weights from saved h5
 model.load_weights(r'D:\Downloads\results\model_3.h5')
 
-#end of model declaration
+print(resized.shape)
+plt.imshow(resized)
+plt.show()
+pred = model.predict_classes(resized.reshape(-1,100,100,3))
+print("prediction for local image")
+print(pred)
 
-def detectImage(image):
-    #image as cv2 object or [x,x,3] numpy array
 
-    width = 100
-    height = 100
-    dim = (width, height)
- 
-    #     resize image
-    resized = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
-
-    pred = model.predict_classes(resized.reshape(-1,100,100,3))
-    print("prediction for local image")
+im_list = [1,100,200,300,400,500,358,693]
+for i in im_list:
+#     i = 1000  #index from test data to be used, change this other value to see a different image
+    img = x_test[i]
+    print(img.shape)
+    plt.imshow(img)
+    plt.show()
+    pred = model.predict_classes(img.reshape(-1,100,100,3))
+    print("prediction")
     print(pred)
-    if pred == [0]:
-        return "squirrel"
-    elif pred == [2]:
-        return "human"
-    else:
-        return "cat, maybe?"
+    
+    actual =  y_test[i]
+    
+    
+    print(f'actual: {actual}')
+    print(f'predicted: {pred}')
 
 
-import io
-import time
-import picamera
-import cv2
-import numpy as np
-
-# Create the in-memory stream
-stream = io.BytesIO()
-with picamera.PiCamera() as camera:
-    camera.start_preview()
-    time.sleep(2)
-    camera.capture(stream, format='jpeg')
-# Construct a numpy array from the stream
-data = np.fromstring(stream.getvalue(), dtype=np.uint8)
-# "Decode" the image from the array, preserving colour
-image = cv2.imdecode(data, 1)
-# OpenCV returns an array with data in BGR order. If you want RGB instead
-# use the following...
-image = image[:, :, ::-1]
-
-print(detectImage(image))
-
+#print(x_test.shape)
