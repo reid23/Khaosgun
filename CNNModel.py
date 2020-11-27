@@ -1,3 +1,8 @@
+#this file is to dev the cnn to replace the YOLOv3 darknet model, at least for squirrels at the moment.
+#yes, I should have used a branch
+#but I just manually merged changes into baseControl when I was done
+# so TLDR; it works
+
 #import block
 import keras
 #import tensorflow as tf
@@ -16,8 +21,9 @@ from keras.models import load_model
 from sklearn.model_selection import train_test_split
 from keras.utils import np_utils
 import matplotlib.pyplot as plt
-
-
+import picamera
+import time
+import os
 #define model
 model = Sequential()
 
@@ -53,68 +59,76 @@ model.add(Dropout(0.4))
 model.add(Dense(3, activation='softmax'))
 #end model
 
-
-x_test = np.load(r'D:\Downloads\results\x_test.npy')
-x_train = np.load(r'D:\Downloads\results\x_train.npy')
-y_test = np.load(r'D:\Downloads\results\y_test.npy')
-y_train = np.load(r'D:\Downloads\results\y_train.npy')
-print(x_test[1].shape)
-print("shape of labels:")
-print(y_test)
-#function to make stuff readable
-labels = ['gatto', 'scoiattolo', 'humans']
+model.load_weights(r'D:\Downloads\results\model_3.h5')
 
 #image loading/reshaping
-img = cv2.imread('standing.jpg')
-print('Original Dimensions : ',img.shape)
- 
-width = 100
-height = 100
-dim = (width, height)
- 
-#     resize image
-resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
- 
-print('Resized Dimensions : ',resized.shape)
- 
-cv2.imshow("Resized image", resized)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+def loadImage(path):
+    img = cv2.imread(path)
+    print('Original Dimensions : ',img.shape)
+    
+    width = 100
+    height = 100
+    dim = (width, height)
+    
+    #     resize image
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    resized = resized.reshape(-1,100,100,3)
+    return resized
 
-print("resized image shape: ")
-print(resized.shape)
+def detectClasses(img):
+    pred = model.predict(img.reshape(-1,100,100,3))
+    return pred
+def shoot(revTimeSec = 0.2, holdTimeSec =  1.5):
+    os.system("gpio -g mode 17 out")
+    os.system("gpio -g write 17 0")
+    time.sleep(revTimeSec)
+    os.system("gpio -g mode 23 out")
+    os.system("gpio -g write 23 0")
+    time.sleep(holdTimeSec)
 
+def stopShoot():
+    os.system("gpio -g mode 17 out")
+    os.system("gpio -g write 17 1")
+    os.system("gpio -g mode 23 out")
+    os.system("gpio -g write 23 1")
+
+
+
+#pi stuff
+detectionThreshold = 0.5
+
+with picamera.PiCamera() as camera:
+    camera.resolution = (1024, 768)
+    camera.start_preview()
+    # Camera warm-up time
+    time.sleep(2)
+    pastTen = np.array([0,0,0,0,0,0,0,0,0,0])
+    
+    while True:
+        camera.capture('img.jpg')
+        img = loadImage('img.jpg')
+        pred = detectClasses(img)
+        np.append(pastTen,[pred[0][0]])
+        np.delete(pastTen,[0])
+        if(np.mean(pastTen) >= detectionThreshold):
+            shoot()
+        else:
+            stopShoot()
+
+        
 
 #load from model folder
 #model = keras.models.load_model('D:\Downloads\model (1)\content\model.model')
 
 #load weights from saved h5
-model.load_weights(r'D:\Downloads\results\model_3.h5')
-
-print(resized.shape)
-plt.imshow(resized)
-plt.show()
-pred = model.predict_classes(resized.reshape(-1,100,100,3))
-print("prediction for local image")
-print(pred)
 
 
-im_list = [1,100,200,300,400,500,358,693]
-for i in im_list:
-#     i = 1000  #index from test data to be used, change this other value to see a different image
-    img = x_test[i]
-    print(img.shape)
-    plt.imshow(img)
-    plt.show()
-    pred = model.predict_classes(img.reshape(-1,100,100,3))
-    print("prediction")
-    print(pred)
-    
-    actual =  y_test[i]
-    
-    
-    print(f'actual: {actual}')
-    print(f'predicted: {pred}')
-
+#image = loadImage('images.jpg')
+#plt.imshow(image.reshape(100,100,3))
+#plt.show()
+#pred = detectClasses(image)
+#print("prediction for local image")
+#print("squirrel      cat        human")
+#print(pred)
 
 #print(x_test.shape)
