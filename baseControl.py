@@ -90,7 +90,7 @@ videoNumber = 0
 photoNumber = 0
 def loadImage(path):
     img = cv2.imread(path)
-    print('Original Dimensions : ',img.shape)
+    #print('Original Dimensions : ',img.shape)
     
     width = 100
     height = 100
@@ -118,7 +118,11 @@ def stopShoot():
 def takeWebPhoto():
     os.system("/var/www/html/photo.sh &")
 def takeAIPhoto():
-    pass
+    if(aividMode == True):
+        takeWebPhoto();
+    else:
+        pass # only works with human detection currently
+        
     #AI photo is the same as web photo
 def takePhoto():
     global photoNumber
@@ -139,24 +143,32 @@ def videoAction():
         recording = False
         print("stopping recording")
 def startAI():
+    pastTen = np.array([0,0,0,0,0,0,0,0,0,0])
     global camera
     print("starting AI control")
     os.system("sudo kill -9 `pidof mjpg_streamer` &")
     global iscamera
-    if(iscamera == True):
-        camera.close()
-        iscamera = False
     if(aividMode == True):
+        os.system("sudo kill -9 `pidof mjpg_streamer` &")
         os.system('rm -rf /var/www/html/squirrel.html')
         os.system('touch /var/www/html/human.html')
+        os.system("sudo kill -9 `pidof mjpg_streamer` &")
+        camera.stop_preveiw()
+        camera.close()
+        iscamera = False
     else:
         os.system('rm -rf /var/www/html/human.html')
         os.system('touch /var/www/html/squirrel.html')
+        time.sleep(0.5)
+        camera = PiCamera()
+        camera.start_preveiw()
+        iscamera = True
 def startWebControl():
     global camera
     print("starting web control")
     global iscamera
     if(iscamera == True):
+        camera.stop_preveiw()
         camera.close()
         time.sleep(0.2)
         iscamera == False
@@ -170,6 +182,7 @@ def startManual():
     os.system("sudo kill -9 `pidof mjpg_streamer` &")
     time.sleep(0.5)
     camera = PiCamera()
+    camera.start_preveiw()
     iscamera = True
 
 pbState = True
@@ -212,6 +225,7 @@ while True:
             startManual()
         elif(controlState == 1):
             startWebControl()
+        elif(controlState == 2):
             startAI()
         else:
             startManual()
@@ -219,26 +233,28 @@ while True:
         pass
     else:
         if(aividMode == True):
+            os.system("sudo kill -9 `pidof mjpg_streamer` &")
             os.system('rm -rf /var/www/html/squirrel.html')
             os.system('touch /var/www/html/human.html')
+            os.system("sudo kill -9 `pidof mjpg_streamer` &")
+            camera.stop_preveiw()
+            camera.close()
+            iscamera = False
         else:
             os.system('rm -rf /var/www/html/human.html')
-            os.system('touch /var/www/html/squirrel.html') 
+            os.system('touch /var/www/html/squirrel.html')
+            time.sleep(0.5)
+            camera = PiCamera()
+            camera.start_preveiw()
+            iscamera = True
     if(controlState == 2):
-        with picamera.PiCamera() as camera:
-            camera.resolution = (1024, 768)
-            camera.start_preview()
-            # Camera warm-up time
-            time.sleep(2)
-            pastTen = np.array([0,0,0,0,0,0,0,0,0,0])
-        
-            while True:
-                camera.capture('img.jpg')
-                img = loadImage('img.jpg')
-                pred = detectClasses(img)
-                np.append(pastTen,[pred[0][0]])
-                np.delete(pastTen,[0])
-                if(np.mean(pastTen) >= detectionThreshold):
-                    shoot()
-                else:
-                    stopShoot()
+
+        camera.capture('img.jpg')
+        img = loadImage('img.jpg')
+        pred = detectClasses(img)
+        np.append(pastTen,[pred[0][0]])
+        np.delete(pastTen,[0])
+        if(np.mean(pastTen) >= detectionThreshold):
+            shoot()
+        else:
+            stopShoot()
