@@ -146,7 +146,7 @@ def startAI():
     pastTen = np.array([0,0,0,0,0,0,0,0,0,0])
     global camera
     print("starting AI control")
-    os.system("sudo kill -9 `pidof mjpg_streamer` &")
+#    os.system("sudo kill -9 `pidof mjpg_streamer` &")
     global iscamera
     if(aividMode == True):
         os.system("sudo kill -9 `pidof mjpg_streamer` &")

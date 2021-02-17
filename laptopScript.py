@@ -6,20 +6,63 @@ import tempfile
 import subprocess
 import urllib.request
 import requests
+import cv2
+import h5py
+from keras.utils.np_utils import to_categorical
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPool2D, BatchNormalization,Activation,MaxPooling2D
+from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import LearningRateScheduler
+from keras.datasets import mnist
+from keras.models import load_model
+from sklearn.model_selection import train_test_split
+from keras.utils import np_utils
+import matplotlib.pyplot as plt
+import keras
+
+model = Sequential()
+
+model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = (100, 100, 3)))
+model.add(BatchNormalization())
+model.add(Conv2D(32, kernel_size = 3, activation='relu'))
+model.add(BatchNormalization())
+model.add(Conv2D(32, kernel_size = 5, strides=2, padding='same', activation='relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.4))
+
+model.add(Conv2D(64, kernel_size = 3, activation='relu'))
+model.add(BatchNormalization())
+model.add(Conv2D(64, kernel_size = 3, activation='relu'))
+model.add(BatchNormalization())
+model.add(Conv2D(64, kernel_size = 5, strides=2, padding='same', activation='relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.4))
+
+model.add(Conv2D(128, kernel_size = 3, activation='relu'))
+model.add(BatchNormalization())
+model.add(Conv2D(128, kernel_size = 3, activation='relu'))
+model.add(BatchNormalization())
+model.add(Conv2D(128, kernel_size = 5, strides=2, padding='same', activation='relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.4))
+
+
+model.add(Conv2D(256, kernel_size = 4, activation='relu'))
+model.add(BatchNormalization())
+model.add(Flatten())
+model.add(Dropout(0.4))
+model.add(Dense(3, activation='softmax'))
+#end model
+
+model.load_weights(r'model_3.h5')
 
 def req(url):
     r = requests.get(url)
     return r.text
 
-def url_is_alive(url):
-    """
-    Checks that a given URL is reachable.
-    :param url: A URL
-    :rtype: bool
-    """
+def urlIsAlive(url):
     request = urllib.request.Request(url)
     request.get_method = lambda: 'HEAD'
-
     try:
         urllib.request.urlopen(request)
         return True
@@ -36,18 +79,28 @@ def stopFire():
     req("http://khaosgun.local/firepinoff.php")
     req("http://khaosgun.local/pinoff.php")
 
+def loadImage(path):
+    img = cv2.imread(path)
+    #print('Original Dimensions : ',img.shape)
+    
+    width = 100
+    height = 100
+    dim = (width, height)
+    
+    #     resize image
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+    resized = resized.reshape(-1,100,100,3)
+    return resized
+def detectClasses(img):
+    pred = model.predict(img.reshape(-1,100,100,3))
+    return pred
 
+#pastTen = np.array([0,0,0,0,0,0,0,0,0,0])
+detectionThreshold = 0.6
 while True:
     os.system("wget http://khaosgun.local:8080/?action=snapshot -O /Users/reiddye/darknet/data/mjpgStream.jpg")
-    #Mink
-    #Meerkat
-    #Weasel
-    #fox_squirrel
-    #Hare
-    #Marmot
-    #wood_rabbit
     with tempfile.TemporaryFile() as tempf:
-        if(url_is_alive("http://khaosgun.local/squirrel.html")):
+        if(urlIsAlive("http://khaosgun.local/squirrel.html")):
             im = Image.open("/Users/reiddye/darknet/data/mjpgStream.jpg")
             width, height = im.size
 
@@ -68,70 +121,12 @@ while True:
 
             # Shows the image in image viewer
             im.save("/Users/reiddye/darknet/data/mjpgStream.jpg")
-            proc = subprocess.Popen(['./detectSquirrel.sh'], stdout=tempf)
-            proc.wait()
-            tempf.seek(0)
-            print(tempf.read())
-            result = tempf.read()
-            result = str(result)
-            if(result.find("fox_squirrel") != -1):
-                numberIndex = result.find("fox_squirrel")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                if(float(result)>20): #change the 20 if u want.  it's the threshold for what counts as a detection.
-                    fire()
-            elif(result.find("wood_rabbit") != -1):
-                numberIndex = result.find("wood_rabbit")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                # change the 20 if u want.  it's the threshold for what counts as a detection.
-                if(float(result) > 20):
-                    fire()
-            elif(result.find("hare") != -1):
-                numberIndex = result.find("hare")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                # change the 20 if u want.  it's the threshold for what counts as a detection.
-                if(float(result) > 20):
-                    fire()
-            elif(result.find("marmot") != -1):
-                numberIndex = result.find("marmot")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                # change the 20 if u want.  it's the threshold for what counts as a detection.
-                if(float(result) > 20):
-                    fire()
-            elif(result.find("mink") != -1):
-                numberIndex = result.find("mink")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                # change the 20 if u want.  it's the threshold for what counts as a detection.
-                if(float(result) > 20):
-                    fire()
-            elif(result.find("meerkat") != -1):
-                numberIndex = result.find("meerkat")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                # change the 20 if u want.  it's the threshold for what counts as a detection.
-                if(float(result) > 20):
-                    fire()
-            elif(result.find("weasel") != -1):
-                numberIndex = result.find("weasel")-8
-                result = result[numberIndex:numberIndex+5]
-                if(result.find(" ") != -1 or result.find("'") != -1):
-                    result = result[:4]
-                # change the 20 if u want.  it's the threshold for what counts as a detection.
-                if(float(result) > 20):
-                    fire()
+            pred = detectClasses(loadImage("/Users/reiddye/darknet/data/mjpgStream.jpg"))
+            if(pred[0][0] >= detectionThreshold):
+                fire()
             else:
                 stopFire()
-        elif(url_is_alive("http://khaosgun.local/human.html")):
+        elif(urlIsAlive("http://khaosgun.local/human.html")):
             im = Image.open("/Users/reiddye/darknet/data/mjpgStream.jpg")
             width, height = im.size
 
