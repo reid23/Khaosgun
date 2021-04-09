@@ -15,13 +15,26 @@ from sklearn.model_selection import train_test_split
 from keras.utils import np_utils
 from PIL import Image
 import time
+import h5py
+import matplotlib.pyplot as plt
 
+
+X_train = np.load(r'D:\Documents\X_train.npy')
+X_test = np.load(r'D:\Documents\X_test.npy')
+y_train = np.load(r'D:\Documents\y_train.npy')
+y_test = np.load(r'D:\Documents\y_test.npy')
+
+print("data loaded")
+print(X_train.shape)
+print(X_test.shape)
+print(y_train.shape)
+print(y_test.shape)
 
 #create multiple cnn model for ensembling
 #model 1
 model = Sequential()
 
-model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = (100, 100, 3)))
+model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = (128, 128, 3)))
 model.add(BatchNormalization())
 model.add(Conv2D(32, kernel_size = 3, activation='relu'))
 model.add(BatchNormalization())
@@ -45,31 +58,37 @@ model.add(Conv2D(128, kernel_size = 5, strides=2, padding='same', activation='re
 model.add(BatchNormalization())
 model.add(Dropout(0.4))
 
-
 model.add(Conv2D(256, kernel_size = 4, activation='relu'))
 model.add(BatchNormalization())
 model.add(Flatten())
 model.add(Dropout(0.4))
-model.add(Dense(3, activation='softmax'))
+model.add(Dense(5, activation='softmax'))
 
 # use adam optimizer and categorical cross entropy cost
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]) 
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]) 
 # after each epoch decrease learning rate by 0.95
 annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
 
-model.summary()
-print(y_train[1])
-print(y_test[1])
 # train
-epochs = 50
+epochs = 150
 j=0
 start_time = time.time()
-model.fit(x_train, y_train, epochs = epochs, validation_data=(x_test,y_test))
-#history = model.fit_generator(datagen.flow(x_train, y_train, batch_size=64),epochs = epochs, steps_per_epoch = x_train.shape[0]/64,validation_data = (x_test, y_test), callbacks=[annealer], verbose=1)
+history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test))
 end_time = time.time()
 #print_time_taken(start_time, end_time)
 
 
 
-#print("CNN {0:d}: Epochs={1:d}, Train accuracy={2:.5f}, Validation accuracy={3:.5f}".format(j+1,epochs,history.history['acc'][epochs-1],history.history['val_acc'][epochs-1]))
-model.save('/')
+print("CNN {0:d}: Epochs={1:d}, Train accuracy={2:.5f}, Validation accuracy={3:.5f}".format(j+1,epochs,history.history['acc'][epochs-1],history.history['val_acc'][epochs-1]))
+
+print(history.history.keys())
+# summarize history for accuracy
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+model.save('D:\\Documents')
