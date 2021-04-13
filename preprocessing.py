@@ -4,6 +4,7 @@ import os
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+
 def getNumpyArray(dir,imageShape=(128,128,3)):
     allImages = []
 
