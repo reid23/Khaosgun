@@ -30,13 +30,11 @@ print(X_test.shape)
 print(y_train.shape)
 print(y_test.shape)
 
-#create multiple cnn model for ensembling
-#model 1
 model = Sequential()
 
 model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = (128, 128, 3)))
 model.add(BatchNormalization())
-model.add(Conv2D(32, kernel_size = 3, activation='relu'))
+model.add(Conv2D(32, kernel_size = 7, activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.4))
 
@@ -44,21 +42,21 @@ model.add(Conv2D(128, kernel_size = 3, activation='relu'))
 model.add(BatchNormalization())
 model.add(Conv2D(128, kernel_size = 5, strides=2, padding='same', activation='relu'))
 model.add(BatchNormalization())
-model.add(Dropout(0.4))
+model.add(Dropout(0.5))
 
 model.add(Conv2D(256, kernel_size = 4, activation='relu'))
 model.add(BatchNormalization())
 model.add(Flatten())
-model.add(Dropout(0.4))
+model.add(Dropout(0.5))
 model.add(Dense(5, activation='softmax'))
 
 # use adam optimizer and categorical cross entropy cost
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]) 
 # after each epoch decrease learning rate by 0.95
-annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
+annealer = LearningRateScheduler(lambda x: 1e-3 * 0.93 ** x)
 
 # train
-epochs = 150
+epochs = 1
 j=0
 start_time = time.time()
 history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test))
@@ -79,4 +77,4 @@ plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.savefig("trainingHistory.png")
 
-model.save('D:\\Documents')
+model.save('C:\\Users\\reidd\\Khaosgun')
