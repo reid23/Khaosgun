@@ -17,6 +17,8 @@ from PIL import Image
 import time
 import h5py
 import matplotlib.pyplot as plt
+import keras
+from keras import optimizers
 
 
 X_train = np.load(r'D:\Documents\X_train.npy')
@@ -32,34 +34,33 @@ print(y_test.shape)
 
 model = Sequential()
 
-model.add(Conv2D(32, kernel_size = 3, activation='relu', input_shape = (128, 128, 3)))
+
+model.add(Conv2D(128, kernel_size = 3, activation='relu', input_shape = (128, 128, 3)))
+model.add(Conv2D(128, kernel_size = 7, activation='relu'))
 model.add(BatchNormalization())
-model.add(Conv2D(32, kernel_size = 7, activation='relu'))
+model.add(Dropout(0.6))
+
+model.add(Conv2D(32, kernel_size = 3, activation='relu'))
+model.add(Conv2D(32, kernel_size = 5, strides=2, padding='same', activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.4))
 
-model.add(Conv2D(128, kernel_size = 3, activation='relu'))
-model.add(BatchNormalization())
-model.add(Conv2D(128, kernel_size = 5, strides=2, padding='same', activation='relu'))
-model.add(BatchNormalization())
-model.add(Dropout(0.5))
-
-model.add(Conv2D(256, kernel_size = 4, activation='relu'))
+model.add(Conv2D(8, kernel_size = 4, activation='relu'))
 model.add(BatchNormalization())
 model.add(Flatten())
-model.add(Dropout(0.5))
+model.add(Dropout(0.3))
 model.add(Dense(5, activation='softmax'))
 
-# use adam optimizer and categorical cross entropy cost
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]) 
+
 # after each epoch decrease learning rate by 0.95
-annealer = LearningRateScheduler(lambda x: 1e-3 * 0.93 ** x)
+#annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
 
 # train
-epochs = 300
+epochs = 200
 j=0
 start_time = time.time()
-history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test))
+history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=50)
 end_time = time.time()
 #print_time_taken(start_time, end_time)
 

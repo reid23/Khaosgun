@@ -6,7 +6,7 @@ def representative_dataset():
       data = np.random.rand(1, 128, 128, 3)
       yield [data.astype(np.float32)]
 
-converter = tf.lite.TFLiteConverter.from_saved_model('D:\\Documents')
+converter = tf.lite.TFLiteConverter.from_saved_model('C:\\Users\\reidd\\Khaosgun')
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
 converter.representative_dataset = representative_dataset
 tflite_model = converter.convert()
