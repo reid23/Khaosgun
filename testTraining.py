@@ -57,10 +57,10 @@ model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]
 #annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
 
 # train
-epochs = 200
+epochs = 100
 j=0
 start_time = time.time()
-history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=32)
+history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test))
 end_time = time.time()
 #print_time_taken(start_time, end_time)
 
