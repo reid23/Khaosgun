@@ -60,7 +60,7 @@ model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]
 epochs = 200
 j=0
 start_time = time.time()
-history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=50)
+history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=32)
 end_time = time.time()
 #print_time_taken(start_time, end_time)
 
