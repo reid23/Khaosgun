@@ -18,8 +18,12 @@ import time
 import h5py
 import matplotlib.pyplot as plt
 import keras
-from keras import optimizers
 
+def getNumpyArray(dir,imageShape=(128,128,3)):
+    img = Image.open(dir)
+    img = img.resize((imageShape[0], imageShape[1]), Image.ANTIALIAS)
+    output = np.array(img, dtype=np.float32)
+    return np.array([output], dtype=np.float32)
 
 X_train = np.load(r'D:\Documents\X_train.npy')
 X_test = np.load(r'D:\Documents\X_test.npy')
@@ -34,33 +38,34 @@ print(y_test.shape)
 
 model = Sequential()
 
-
-model.add(Conv2D(128, kernel_size = 3, activation='relu', input_shape = (128, 128, 3)))
-model.add(Conv2D(128, kernel_size = 7, activation='relu'))
+model.add(Conv2D(128, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3), input_shape = (128, 128, 3)))
 model.add(BatchNormalization())
-model.add(Dropout(0.6))
-
-model.add(Conv2D(32, kernel_size = 3, activation='relu'))
-model.add(Conv2D(32, kernel_size = 5, strides=2, padding='same', activation='relu'))
+model.add(Conv2D(128, kernel_size = 7, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
 model.add(BatchNormalization())
 model.add(Dropout(0.4))
 
-model.add(Conv2D(8, kernel_size = 4, activation='relu'))
+model.add(Conv2D(32, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Conv2D(32, kernel_size = 5, strides=2, padding='same', activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Dropout(0.4))
+
+model.add(Conv2D(8, kernel_size = 4, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
 model.add(BatchNormalization())
 model.add(Flatten())
-model.add(Dropout(0.3))
+model.add(Dropout(0.4))
 model.add(Dense(5, activation='softmax'))
 
+# use adam optimizer and categorical cross entropy cost
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]) 
-
 # after each epoch decrease learning rate by 0.95
-#annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
+annealer = LearningRateScheduler(lambda x: 1e-3 * 0.96 ** x)
 
 # train
-epochs = 100
+epochs = 5
 j=0
 start_time = time.time()
-history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test))
+history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=32)
 end_time = time.time()
 #print_time_taken(start_time, end_time)
 
@@ -79,3 +84,10 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.savefig("trainingHistory.png")
 
 model.save('C:\\Users\\reidd\\Khaosgun')
+def run_model(image_dir):
+	startTime = time.time()
+	print(model.predict(getNumpyArray(image_dir)))
+	endTime = time.time()
+	print("Time taken to run: " + str(endTime-startTime))
+run_model("buisness.jpeg")
+run_model("images.jpg")
