@@ -19,7 +19,7 @@ import h5py
 import matplotlib.pyplot as plt
 import keras
 
-def getNumpyArray(dir,imageShape=(128,128,3)):
+def getNumpyArray(dir,imageShape=(256,256,3)):
     img = Image.open(dir)
     img = img.resize((imageShape[0], imageShape[1]), Image.ANTIALIAS)
     output = np.array(img, dtype=np.float32)
@@ -36,25 +36,40 @@ print(X_test.shape)
 print(y_train.shape)
 print(y_test.shape)
 
+
+
 model = Sequential()
 
-model.add(Conv2D(128, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3), input_shape = (128, 128, 3)))
+model.add(Conv2D(32, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3), input_shape = (256, 256, 3)))
 model.add(BatchNormalization())
-model.add(Conv2D(128, kernel_size = 7, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
-model.add(BatchNormalization())
-model.add(Dropout(0.4))
-
 model.add(Conv2D(32, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
 model.add(BatchNormalization())
 model.add(Conv2D(32, kernel_size = 5, strides=2, padding='same', activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
 model.add(BatchNormalization())
 model.add(Dropout(0.4))
 
-model.add(Conv2D(8, kernel_size = 4, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(Conv2D(64, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Conv2D(64, kernel_size = 3, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Conv2D(64, kernel_size = 5, strides=2, padding='same', activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Dropout(0.4))
+
+model.add(Conv2D(128, kernel_size = 5, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Conv2D(128, kernel_size = 5, activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Conv2D(128, kernel_size = 7, strides=2, padding='same', activation=tf.keras.layers.LeakyReLU(alpha=0.3)))
+model.add(BatchNormalization())
+model.add(Dropout(0.4))
+
+
+model.add(Conv2D(256, kernel_size = 4, activation='relu'))
 model.add(BatchNormalization())
 model.add(Flatten())
 model.add(Dropout(0.4))
-model.add(Dense(5, activation='softmax'))
+model.add(Dense(4, activation='softmax'))
 
 # use adam optimizer and categorical cross entropy cost
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]) 
@@ -62,10 +77,10 @@ model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["acc"]
 annealer = LearningRateScheduler(lambda x: 1e-3 * 0.96 ** x)
 
 # train
-epochs = 5
+epochs = 100
 j=0
 start_time = time.time()
-history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=32)
+history = model.fit(X_train, y_train, epochs = epochs, validation_data=(X_test,y_test), batch_size=16)
 end_time = time.time()
 #print_time_taken(start_time, end_time)
 
@@ -84,10 +99,27 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.savefig("trainingHistory.png")
 
 model.save('C:\\Users\\reidd\\Khaosgun')
-def run_model(image_dir):
-	startTime = time.time()
-	print(model.predict(getNumpyArray(image_dir)))
-	endTime = time.time()
-	print("Time taken to run: " + str(endTime-startTime))
-run_model("buisness.jpeg")
-run_model("images.jpg")
+
+
+def run_model(image_dir, plot_image=True, cpu_only=False):
+    startTime = time.time()
+    if cpu_only==True:
+        with tf.device("/cpu:0"):
+            output_data = np.array(model.predict(getNumpyArray(image_dir)))
+            endTime = time.time()
+    else:
+        output_data = np.array(model.predict(getNumpyArray(image_dir)))
+        endTime = time.time()
+    classification_time = endTime-startTime
+    print(image_dir + ":")
+    if plot_image==True:
+        imgplot = plt.imshow(getNumpyArray(image_dir)[0]/255)
+        plt.show()
+    print("person: " + str(np.format_float_positional(output_data[0][0], trim = '-')))
+    print("nothing: " + str(np.format_float_positional(output_data[0][1], trim = '-')))
+    print("squirrel: " + str(np.format_float_positional(output_data[0][2], trim = '-')))
+    print("chicken: " + str(np.format_float_positional(output_data[0][3], trim = '-')))
+    print("classification time: " + str(classification_time) + " seconds")
+    print("---------------------------------------------------------------------")
+run_model("buisness.jpeg", plot_image = False)
+run_model("images.jpg", plot_image = False)

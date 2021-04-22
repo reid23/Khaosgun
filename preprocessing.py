@@ -5,16 +5,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-def getNumpyArray(dir,imageShape=(128,128,3)):
+def getNumpyArray(dir,imageShape=(256,256,3)):
     allImages = []
 
     for i in os.listdir(dir):
         img = Image.open(dir+"\\"+i)
         img = img.resize((imageShape[0], imageShape[1]), Image.ANTIALIAS)
-        if(np.array(img).shape != imageShape):
-            print("image " + dir + "\\" + i + " has shape of " + str(list(np.array(img).shape)) + ", which is incompatible with the asserted output shape.  This image will be ignored.")
-            continue
         allImages.append(np.array(img).tolist())
+        print("beep boop! " + i)
     allImages = np.array(allImages)
     print(dir + " loaded to numpy array")
     return allImages
@@ -23,27 +21,27 @@ def getNumpyArray(dir,imageShape=(128,128,3)):
 people = getNumpyArray(r'D:\Downloads\persons')
 nothing = getNumpyArray(r'D:\Downloads\none\none')
 squirrels = getNumpyArray(r'D:\Downloads\archive\raw-img\squirrel')
-cats = getNumpyArray(r'D:\Downloads\archive\raw-img\cat')
+#cats = getNumpyArray(r'D:\Downloads\archive\raw-img\cat')
 chickens = getNumpyArray(r'D:\Downloads\archive\raw-img\chicken')
-data = np.concatenate([people, nothing, squirrels, cats, chickens], axis=0)
+data = np.concatenate([people, nothing, squirrels, chickens], axis=0)
 
 print("Data processed")
 
 labels = []
 for i in people:
-    labels.append([1,0,0,0,0])
+    labels.append([1,0,0,0])
 print("Labels made for category 'people'")
 for i in nothing:
-    labels.append([0,1,0,0,0])
+    labels.append([0,1,0,0])
 print("Labels made for category 'nothing'")
 for i in squirrels:
-    labels.append([0,0,1,0,0])
+    labels.append([0,0,1,0])
 print("Labels made for category 'squirrels'")
-for i in cats:
-    labels.append([0,0,0,1,0])
+#for i in cats:
+#    labels.append([0,0,0,1,0])
 print("Labels made for category 'cats'")
 for i in chickens:
-    labels.append([0,0,0,0,1])
+    labels.append([0,0,0,1])
 print("Labels made for category 'chickens'")
 labels = np.array(labels)
 

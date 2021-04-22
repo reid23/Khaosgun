@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\reidd\\anaconda3\\envs\\tf_gpu\\python.exe"
+    "python.pythonPath": "C:\\Users\\reidd\\anaconda3\\envs\\tf_gpu\\python.exe",
+    "jupyter.jupyterServerType": "local"
 }

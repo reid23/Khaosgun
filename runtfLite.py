@@ -38,9 +38,12 @@ classification_time = np.round(endTime-startTime, 3)
 print("person: " + str(np.format_float_positional(output_data[0][0], trim = '-')))
 print("nothing: " + str(np.format_float_positional(output_data[0][1], trim = '-')))
 print("squirrel: " + str(np.format_float_positional(output_data[0][2], trim = '-')))
-print("cat: " + str(np.format_float_positional(output_data[0][3], trim = '-')))
-print("chicken: " + str(np.format_float_positional(output_data[0][4], trim = '-')))
+#print("cat: " + str(np.format_float_positional(output_data[0][3], trim = '-')))
+print("chicken: " + str(np.format_float_positional(output_data[0][3], trim = '-')))
 print("classification time: " + str(classification_time) + " seconds")
+
+"""
 img = input_data[0]
 imgplot = plt.imshow(img/255)
 plt.show()
+"""

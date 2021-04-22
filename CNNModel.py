@@ -8,7 +8,6 @@ import keras
 #import tensorflow as tf
 import numpy as np
 from PIL import Image
-import cv2
 import h5py
 import numpy as np
 from keras.utils.np_utils import to_categorical
