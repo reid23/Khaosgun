@@ -49,7 +49,7 @@ print("Labels processed")
 print("data shape: " + str(list(data.shape)))
 print("labels shape: " + str(list(labels.shape)))
 
-X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=53)
+X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, shuffle=False)
 
 print("processed shapes:")
 print(X_train.shape)
