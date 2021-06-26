@@ -38,6 +38,17 @@ model.add(Conv2D(64, kernel_size=(3, 3), strides=(1, 1),
 model.add(BatchNormalization())
 model.add(Dropout(0.6))
 model.add(MaxPool2D(pool_size=(1)))
+model.add(Conv2D(64, kernel_size=(5, 5), strides=(1, 1),
+          padding='valid', activation='relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.6))
+model.add(MaxPool2D(pool_size=(1)))
+
+model.add(Conv2D(100, kernel_size=(3, 3), strides=(1, 1),
+          padding='valid', activation='relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.6))
+model.add(MaxPool2D(pool_size=(1)))
 # flatten output of conv
 model.add(Flatten())
 model.add(Dropout(0.8))
@@ -54,7 +65,7 @@ model.compile(optimizer="adam",
 #annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
 
 # train
-epochs = 50
+epochs = 300
 j = 0
 start_time = time.time()
 with tf.device('/GPU:0'):
