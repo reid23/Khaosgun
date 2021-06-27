@@ -10,6 +10,7 @@ import tensorflow as tf
 import os
 from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
+import h5py
 # os.environ['TF_XLA_FLAGS'] = '--tf_xla_enable_xla_devices'
 # %%
 
@@ -29,8 +30,8 @@ plt.show()
 
 
 # %%
+# making the model
 
-print(x_train.shape)
 model = Sequential([])
 # convolutional layer
 model.add(Conv2D(64, kernel_size=(3, 3), strides=(1, 1),
@@ -44,7 +45,7 @@ model.add(BatchNormalization())
 model.add(Dropout(0.6))
 model.add(MaxPool2D(pool_size=(1)))
 
-model.add(Conv2D(100, kernel_size=(3, 3), strides=(1, 1),
+model.add(Conv2D(64, kernel_size=(7, 7), strides=(1, 1),
           padding='valid', activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.6))
@@ -65,7 +66,7 @@ model.compile(optimizer="adam",
 #annealer = LearningRateScheduler(lambda x: 1e-3 * 0.95 ** x)
 
 # train
-epochs = 300
+epochs = 800
 j = 0
 start_time = time.time()
 with tf.device('/GPU:0'):
@@ -98,5 +99,8 @@ b = tf.constant([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
 c = tf.matmul(a, b)
 
 print(c)
+
+# %%
+model.save('/home/reid/Documents/repositories/Khaosgun/model1_simple.h5')
 
 # %%
