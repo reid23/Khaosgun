@@ -91,7 +91,7 @@ model.add(Dense(32))
 model.add(Dropout(0.5))
 # flatten output of conv
 model.add(Flatten())
-model.add(Dropout(0.6))
+model.add(Dropout(0.3))
 # hidden layer
 #model.add(Dense(300, activation='relu'))
 # model.add(Dropout(0.7))
@@ -109,7 +109,7 @@ model.compile(optimizer="adam",
 
 plt.imshow(X_train[0], cmap='gray')
 plt.show()
-epochs = 10000
+epochs = 1000
 j = 0
 start_time = time.time()
 with tf.device('/GPU:0'):
