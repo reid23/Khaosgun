@@ -21,10 +21,10 @@ import matplotlib.pyplot as plt
 from numba import njit
 
 
-X_train = np.load(r'/home/reid/Documents/khaosTrainData/X_train1.npy')
-X_test = np.load(r'/home/reid/Documents/khaosTrainData/X_test1.npy')
-y_train = np.load(r'/home/reid/Documents/khaosTrainData/y_train1.npy')
-y_test = np.load(r'/home/reid/Documents/khaosTrainData/y_test1.npy')
+X_train = np.load(r'/home/reid/Documents/khaosTrainData/X_train2.npy')
+X_test = np.load(r'/home/reid/Documents/khaosTrainData/X_test2.npy')
+y_train = np.load(r'/home/reid/Documents/khaosTrainData/y_train2.npy')
+y_test = np.load(r'/home/reid/Documents/khaosTrainData/y_test2.npy')
 
 print("data loaded")
 print(X_train.shape)
@@ -70,15 +70,15 @@ model.add(Conv2D(100, kernel_size=(3, 3), strides=(1, 1),
           padding='valid', activation='relu', input_shape=(128, 128, 1)))
 model.add(BatchNormalization())
 model.add(Dropout(0.6))
-model.add(Conv2D(100, kernel_size=(7, 7), strides=(1, 1),
+model.add(Conv2D(100, kernel_size=(7, 7), strides=(2, 2),
           padding='valid', activation='relu'))
 model.add(Dropout(0.6))
-model.add(Conv2D(64, kernel_size=(5, 5), strides=(1, 1),
+model.add(Conv2D(64, kernel_size=(5, 5), strides=(2, 2),
           padding='valid', activation='relu'))
 model.add(Dropout(0.6))
 #model.add(MaxPool2D(pool_size=5))
 
-model.add(Conv2D(32, kernel_size=(5, 5), strides=(2, 2),
+model.add(Conv2D(32, kernel_size=(3, 3), strides=(2, 2),
           padding='valid', activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.6))
@@ -109,7 +109,7 @@ model.compile(optimizer="adam",
 
 plt.imshow(X_train[0], cmap='gray')
 plt.show()
-epochs = 1000
+epochs = 30
 j = 0
 start_time = time.time()
 with tf.device('/GPU:0'):

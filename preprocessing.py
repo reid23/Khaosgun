@@ -43,9 +43,9 @@ for i in arrays:
 
 # %%
 people = getNumpyArray(r'/home/reid/projects/khaosPhotos/person',
-                       (128, 128, 3), pprocess=['MONOCOLOR', 'GAUSSIAN'])
+                       (128, 128, 3), pprocess=['MONOCOLOR'])
 nothing = getNumpyArray(r'/home/reid/projects/khaosPhotos/none',
-                        (128, 128, 3), pprocess=['MONOCOLOR', 'GAUSSIAN'])
+                        (128, 128, 3), pprocess=['MONOCOLOR'])
 data = np.concatenate([people, nothing], axis=0)
 
 print("Data processed")
@@ -76,9 +76,9 @@ print(y_test.shape)
 print(y_test[1:10])
 print(y_train[1:10])
 
-np.save(r'/home/reid/Documents/khaosTrainData/X_train1', X_train)
-np.save(r'/home/reid/Documents/khaosTrainData/X_test1', X_test)
-np.save(r'/home/reid/Documents/khaosTrainData/y_train1', y_train)
-np.save(r'/home/reid/Documents/khaosTrainData/y_test1', y_test)
+np.save(r'/home/reid/Documents/khaosTrainData/X_train2', X_train)
+np.save(r'/home/reid/Documents/khaosTrainData/X_test2', X_test)
+np.save(r'/home/reid/Documents/khaosTrainData/y_train2', y_train)
+np.save(r'/home/reid/Documents/khaosTrainData/y_test2', y_test)
 
 # %%

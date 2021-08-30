@@ -41,12 +41,12 @@ def addDimension(arrayOfImages):
     return output
     print("done!")
 
-model = load_model('withPreprocessing2.h5')
+model = load_model('withPreprocessingYAY.h5')
 
-X_train = np.load(r'/home/reid/Documents/khaosTrainData/X_train.npy')
-X_test = np.load(r'/home/reid/Documents/khaosTrainData/X_test.npy')
-y_train = np.load(r'/home/reid/Documents/khaosTrainData/y_train.npy')
-y_test = np.load(r'/home/reid/Documents/khaosTrainData/y_test.npy')
+X_train = np.load(r'/home/reid/Documents/khaosTrainData/X_train2.npy')
+X_test = np.load(r'/home/reid/Documents/khaosTrainData/X_test2.npy')
+y_train = np.load(r'/home/reid/Documents/khaosTrainData/y_train2.npy')
+y_test = np.load(r'/home/reid/Documents/khaosTrainData/y_test2.npy')
 
 print(X_train.shape)
 X_train = addDimension(X_train)
@@ -58,11 +58,11 @@ counter= 0
 startTime = time.time()
 for j in range(100):
     for i in model.predict(X_test):
-        '''
+        
         plt.imshow(X_test[counter], cmap='gray')
         plt.annotate(str(i), xy=(0,10), color='green')
         plt.show()
-        '''
+        
         counter += 1
 
 endTime = time.time()
